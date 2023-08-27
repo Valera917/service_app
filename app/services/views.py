@@ -1,6 +1,8 @@
+from django.db.models import Prefetch
 from django.shortcuts import render
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from clients.models import Client
 from services.models import Subscription
 from services.serializers import SubscriptionsSerializer
 
@@ -9,10 +11,8 @@ class SubscriptionsViewSet(ReadOnlyModelViewSet):
     """
     A simple ViewSet for viewing accounts.
     """
-    queryset = Subscription.objects.all()
+    queryset = Subscription.objects.all().prefetch_related(
+        Prefetch('client', queryset=Client.objects.all().select_related('user').only('company_name',
+                                                              'user__email')),
+    )
     serializer_class = SubscriptionsSerializer
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [TokenAuthentication]
-    #
-    # def get_queryset(self):
-    #     return Subscriptions.objects.filter(user=self.request.user)
