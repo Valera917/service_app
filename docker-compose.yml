@@ -30,7 +30,7 @@ services:
     image: redis:7.0.5-alpine
     hostname: redis
 
-  woker:
+  worker:
     build:
       context: .
     hostname: worker
@@ -43,3 +43,17 @@ services:
     depends_on:
       - redis
 
+  flower:
+    build:
+      context: .
+    hostname: flower
+    entrypoint: celery
+    command: -A celery_app.app flower
+    volumes:
+      - ./app:/app
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"
