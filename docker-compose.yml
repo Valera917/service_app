@@ -49,6 +49,25 @@ services:
       - DB_USER=dbuser
       - DB_PASS=pass
 
+  worker2:
+    build:
+      context: .
+    hostname: worker2
+    entrypoint: celery
+    volumes:
+      - ./app:/app
+    command: -A celery_app worker --loglevel=info
+    links:
+      - redis
+    depends_on:
+      - redis
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=dbname
+      - DB_USER=dbuser
+      - DB_PASS=pass
+
   flower:
     build:
       context: .
